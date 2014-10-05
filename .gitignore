@@ -2,3 +2,4 @@ buildroot/output/
 buildroot/dl/
 output/
 *.qm
+*.*~
