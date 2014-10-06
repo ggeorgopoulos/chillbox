@@ -40,7 +40,13 @@ function register(service) {
 				case 'get':
 					var getter = 'get_' + e.params;
 					if (getter in service) {
-						service[getter].call(service, e);	
+						try {
+							service[getter].call(service, e);
+						} catch(e) {
+							api.sendErrorResponse(e,  dtalk.kINTERNAL_ERROR, e);
+						}
+					} else {
+						api.sendErrorResponse(e, dtalk.kINVALID_REQUEST, 'The property is not available');	
 					}
 					break;
 				case 'set':
@@ -48,14 +54,25 @@ function register(service) {
 					for (var p in properties) {
 						var setter = 'set_' + p;
 						if (setter in service) {
-							service[setter].call(service, properties[p]);	
+							try {
+								service[setter].call(service, properties[p]);
+							} catch(e) {
+								console.log(e);	
+							}
 						}
 					}
+					// NOTE: 'set' does not return errors
 					break;
 				default:
 					var method = 'do_' + e.action;
 					if (method in service) {
-						service[method].call(service, e);	
+						try {
+							service[method].call(service, e);
+						} catch(e) {
+							api.sendErrorResponse(e,  dtalk.kINTERNAL_ERROR, e);
+						}
+					} else {
+						api.sendErrorResponse(e, dtalk.kACTION_NOT_FOUND, 'The action is not available');	
 					}
 					break;
 				}

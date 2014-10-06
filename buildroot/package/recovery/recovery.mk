@@ -38,9 +38,9 @@ define RECOVERY_INSTALL_TARGET_CMDS
 	rm -rf $(TARGET_DIR)/opt/*
 
 	# Install Frdddo/DTalk server
-	(cd $(TARGET_DIR)/opt && \
-	jar xvf $(TOPDIR)/../freddo-dtalk/$(FREDDO_DTALK_SERVER).zip && \
-	chmod +x $(FREDDO_DTALK_SERVER)/bin/*) 
+	#(cd $(TARGET_DIR)/opt && \
+	#jar xvf $(TOPDIR)/../freddo-dtalk/$(FREDDO_DTALK_SERVER).zip && \
+	#chmod +x $(FREDDO_DTALK_SERVER)/bin/*) 
 endef
 
 $(eval $(generic-package))

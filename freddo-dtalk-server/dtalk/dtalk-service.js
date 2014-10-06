@@ -18,6 +18,12 @@ var DTalkService = function() {
 
 DTalkService.prototype.__proto__ = EventEmitter.prototype;
 
+DTalkService.prototype.kINVALID_JSON = -32700;
+DTalkService.prototype.kINVALID_REQUEST = -32600;
+DTalkService.prototype.kACTION_NOT_FOUND = -32601;
+DTalkService.prototype.kINVALID_PARAMS = -32602;
+DTalkService.prototype.kINTERNAL_ERROR = -32603;
+
 DTalkService.prototype.start = function(options) {
 	console.log("Starting DTalkService: ", JSON.stringify(options));
 	

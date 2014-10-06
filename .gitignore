@@ -3,3 +3,4 @@ buildroot/dl/
 output/
 *.qm
 *.*~
+/ChillBox-*

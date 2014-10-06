@@ -3,7 +3,7 @@ var hub = require('./hub.js')
   , dtalk = require('./dtalk-service.js')
   , WebSocket = require('ws');
 
-/* Subscribers mapped by (sender + topic). */
+/* Subscribers mapped by (sender + event). */
 var subscribers = {};
 
 var _dtalk; 
@@ -38,11 +38,11 @@ exports.start = function(/*DTalkService*/dtalk) {
 
 function handleSubscribe(e) {
 	const from = e.from;
-	var topic = e.params;
-	if (topic) {
-		topic = from + topic;
-		console.log('handleSubscribe: ', topic);
-		if (!(topic in subscribers)) {
+	var event = e.params;
+	if (from && event) {
+		event = from + event;
+		console.log('handleSubscribe: ', event);
+		if (!(event in subscribers)) {
 			// create new
 			var subscriber = function(e) {
 				// DO NOT publish as '$dtalk.onOutgoingMsg',
@@ -51,28 +51,29 @@ function handleSubscribe(e) {
 				handleOutgoingMsg(e)
 			};
 			subscriber['__refCnt'] = 1;
-			subscribers[topic] = subscriber;
+			subscribers[event] = subscriber;
 			
 			console.log('subscribe to', e.params);
 			hub.on(e.params, subscriber);
 		} else {
 			// increace refCnt
-			var subscriber = subscribers[topic];
+			var subscriber = subscribers[event];
 			++subscriber.__refCnt;
 		}
 	}
 }
 
 function handleUnsubscribe(e) {
-	var topic = e.params;
-	if (topic) {
-		topic = e.from + topic;
-		console.log('handleUnsubscribe: ', topic);
-		if (topic in subscribers) {
+	const from = e.from;
+	var event = e.params;
+	if (from && event) {
+		event = e.from + event;
+		console.log('handleUnsubscribe: ', event);
+		if (event in subscribers) {
 			// decrease refCnt
-			var subscriber = subscribers[topic];
+			var subscriber = subscribers[event];
 			if (--subscriber.__refCnt === 0) {
-				delete subscribers[topic];
+				delete subscribers[event];
 				hub.remove(e.params, subscriber);
 			}
 		}
