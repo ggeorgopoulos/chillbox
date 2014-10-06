@@ -34,7 +34,7 @@ DTalkService.prototype.start = function(options) {
 	discovery.start(this);
 	
 	var app = express();
-	app.use(express.static(__dirname + '/../'));
+	app.use(express.static(options.www || __dirname + '/..'));
 	
 	var server = http.createServer(app);
 	server.listen(options.port);

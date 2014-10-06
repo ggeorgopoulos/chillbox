@@ -59,7 +59,7 @@ function createEvent(event, data) {
 	}
 }
 
-exports.fireEvent = function(service, event, data) {
-	event = '$' + service.name + '.' + event;
+exports.fireEvent = function(/*String*/service, event, data) {
+	event = '$' + service + '.' + event;
 	hub.emit(event, createEvent(event, data));
 }
