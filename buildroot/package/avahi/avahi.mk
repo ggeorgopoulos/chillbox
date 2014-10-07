@@ -78,13 +78,12 @@ AVAHI_CONF_OPT = --localstatedir=/var \
 		--disable-monodoc \
 		--disable-stack-protector \
 		--with-distro=none \
-		$(if $(BR2_HAVE_DOCUMENTATION),--enable,--disable)-manpages \
+		--disable-manpages \
 		$(if $(BR2_PACKAGE_AVAHI_AUTOIPD),--enable,--disable)-autoipd \
-		--enable-compat-libdns_sd \
-		--with-avahi-user=default \
-		--with-avahi-group=default \
-		--with-autoipd-user=default \
-		--with-autoipd-group=default
+		--with-avahi-user=avahi \
+		--with-avahi-group=avahi \
+		--with-autoipd-user=avahi \
+		--with-autoipd-group=avahi
 
 AVAHI_DEPENDENCIES = $(if $(BR2_NEEDS_GETTEXT_IF_LOCALE),gettext) host-intltool \
        host-pkgconf host-gettext
@@ -100,6 +99,10 @@ AVAHI_DEPENDENCIES += expat
 AVAHI_CONF_OPT += --with-xml=expat
 else
 AVAHI_CONF_OPT += --with-xml=none
+endif
+
+ifeq ($(BR2_PACKAGE_AVAHI_LIBDNSSD_COMPATIBILITY),y)
+AVAHI_CONF_OPTS += --enable-compat-libdns_sd
 endif
 
 ifeq ($(BR2_PACKAGE_DBUS),y)
@@ -140,18 +143,15 @@ AVAHI_DEPENDENCIES += gettext
 AVAHI_MAKE_OPT = LIBS=-lintl
 endif
 
+define AVAHI_USERS
+	avahi -1 avahi -1 * - - -
+endef
+
 define AVAHI_REMOVE_INITSCRIPT
 	rm -rf $(TARGET_DIR)/etc/init.d/avahi-*
 endef
 
-# (ggeorg)
-# TODO Fix hardcoded 'arm-buildroot-linux-uclibcgnueabi' path.
-define AVAHI_FIX_DNS_SD_H_DIR
-	cp output/host/usr/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/include/avahi-compat-libdns_sd/dns_sd.h \
-		output/host/usr/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/include/dns_sd.h
-endef
-
-AVAHI_POST_INSTALL_TARGET_HOOKS += AVAHI_REMOVE_INITSCRIPT AVAHI_FIX_DNS_SD_H_DIR
+AVAHI_POST_INSTALL_TARGET_HOOKS += AVAHI_REMOVE_INITSCRIPT
 
 define AVAHI_INSTALL_AUTOIPD
 	rm -rf $(TARGET_DIR)/etc/dhcp3/
@@ -172,6 +172,16 @@ endef
 
 ifeq ($(BR2_PACKAGE_AVAHI_DAEMON),y)
 AVAHI_POST_INSTALL_TARGET_HOOKS += AVAHI_INSTALL_DAEMON_INITSCRIPT
+endif
+
+# (ggeorg) applications expects to be able to #include <dns_sd.h>
+define AVAHI_STAGING_INSTALL_LIBDNSSD_LINK
+	ln -sf avahi-compat-libdns_sd/dns_sd.h \
+		$(STAGING_DIR)/usr/include/dns_sd.h
+endef
+
+ifeq ($(BR2_PACKAGE_AVAHI_LIBDNSSD_COMPATIBILITY),y)
+AVAHI_POST_INSTALL_STAGING_HOOKS += AVAHI_STAGING_INSTALL_LIBDNSSD_LINK
 endif
 
 $(eval $(autotools-package))

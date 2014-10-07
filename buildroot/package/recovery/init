@@ -28,6 +28,107 @@ fi
 # Mouse acceleration
 #export QWS_MOUSE_PROTO=:accel=1
 
+#
+# Loopback Interface
+#
+
+ifconfig lo 127.0.0.1
+
+#
+# Start DBUS daemon
+#
+
+# Sanity checks.
+[ -x /usr/bin/dbus-daemon ] || exit 0
+
+# Create needed directories.
+[ -d /var/run/dbus ] || mkdir -p /var/run/dbus
+[ -d /var/lock/subsys ] || mkdir -p /var/lock/subsys
+[ -d /tmp/dbus ] || mkdir -p /tmp/dbus
+
+# Starting system message bus
+dbus-uuidgen --ensure
+dbus-daemon --system
+RETVAL=$?
+[ $RETVAL -eq 0 ] && touch /var/lock/subsys/dbus-daemon
+
+#
+# Start Avahi daemon
+#
+
+if [ ! -d /tmp/avahi-autoipd ]; then
+	rm -rf /tmp/avahi-autoipd
+	mkdir /tmp/avahi-autoipd
+	chown default.default /tmp/avahi-autoipd
+fi
+
+# This flag is apparently what now causes avahi to attempt to use
+# SO_REUSEPORT (and turning it to yes disables this new behavior.)
+# The docs indicate this is some mechanism to accomodate nasty 
+# setups with more than one mdns handler on them at the same time.
+sed -i 's|^#\(disallow-other-stacks=\)no|\1yes|g' /etc/avahi/avahi-daemon.conf
+
+# Starting avahi
+avahi-daemon -D
+
+#
+# NodeJs module path fix
+#
+
+ln -sf /usr /usr/local
+
+# Start Freddo/DTalk server
+#/opt/freddo-dtalk-server/startup.sh &
+
+# ---
 SAFE_MODE=`vcgencmd get_config safe_mode_gpio`
 
+if ( [ ${SAFE_MODE#*=} -eq 1 ] && ! grep -q disablesafemode /proc/cmdline ) || grep -q rescueshell /proc/cmdline; then
+    sh
+else
+    RUN_INSTALLER=
+    GPIO_TRIGGER=
+    KEYBOARD_NO_TRIGGER=
+    FORCE_TRIGGER=
+    DEFAULT_LANG=
+    DEFAULT_KBD=
+    DEFAULT_DISPLAY=
+    DEFAULT_PARTITION=
+
+    if grep -q runinstaller /proc/cmdline; then
+        RUN_INSTALLER=-runinstaller
+    fi
+    if grep -q gpiotriggerenable /proc/cmdline; then
+        GPIO_TRIGGER=-gpiotriggerenable
+    fi
+    if grep -q keyboardtriggerdisable /proc/cmdline; then
+        KEYBOARD_NO_TRIGGER=-keyboardtriggerdisable
+    fi
+    if grep -q forcetrigger /proc/cmdline; then
+        FORCE_TRIGGER=-forcetrigger
+    fi
+    for p in `cat /proc/cmdline` ; do
+        if [ "${p%%=*}" == "lang" ] ; then
+            DEFAULT_LANG="-lang ${p#*=}";
+        fi
+        if [ "${p%%=*}" == "keyboard" ] ; then
+            DEFAULT_KBD="-kbdlayout ${p#*=}";
+        fi
+        if [ "${p%%=*}" == "display" ] ; then
+            DEFAULT_DISPLAY="-dispmode ${p#*=}"
+        fi
+        if [ "${p%%=*}" == "partition" ] ; then
+            DEFAULT_PARTITION="-partition ${p#*=}"
+        fi
+    done
+
+    /usr/bin/recovery $RUN_INSTALLER $GPIO_TRIGGER $KEYBOARD_NO_TRIGGER $FORCE_TRIGGER $DEFAULT_KBD $DEFAULT_LANG $DEFAULT_DISPLAY $DEFAULT_PARTITION -qws 2>/tmp/debug
+
+fi
+
+# Recovery should have rebooted
+
+echo Recovery application crashed
+echo Starting shell
 sh
+

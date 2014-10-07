@@ -1,5 +1,5 @@
 var dtalk = require('../dtalk/dtalk-service.js')
-  , api = require('./service-api.js'),
+  , api = require('./service-api.js')
   , gpio = require('rpi-gpio');
   
 // Using MOD_RPI by default.
@@ -18,8 +18,8 @@ exports.do_read = function(request) {
 			} else {
 				api.sendErrorResponse(request, dtalk.kINTERNAL_ERROR, 'Error reading channel: ' + channel, err);	
 			}
-		}
-	}
+		});
+	};
 	gpio.setup(channel, gpio.DIR_IN, cb);
 }
 
@@ -36,7 +36,7 @@ exports.do_write = function(request) {
 			} else {
 				api.sendErrorResponse(request, dtalk.kINTERNAL_ERROR, 'Error reading channel: ' + channel, err);	
 			}
-		}
+		});
 	}
 	gpio.setup(channel, gpio.DIR_OUT, cb);
 }

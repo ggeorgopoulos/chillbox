@@ -8,6 +8,7 @@ var DTalkService = require('./dtalk/dtalk-service.js')
 var port = process.env.FREDDO_DTALK_PORT || 8840;
 var name = process.env.FREDDO_DTALK_NAME || os.hostname();
 var mac  = process.env.FREDDO_DTALK_MAC  || uuid.v1();
+mac = mac.split(':').join('');
 
 DTalkService.start({ 
 	name: name + '@' + mac, 

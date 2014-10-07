@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>
+<head>
+<title>buildroot - Buildroot: Making Embedded Linux easy</title>
+<meta name='generator' content='cgit v0.9.1'/>
+<meta name='robots' content='index, nofollow'/>
+<link rel='stylesheet' type='text/css' href='/cgit.css'/>
+<link rel='alternate' title='Atom feed' href='http://git.buildroot.net/buildroot/atom/package/avahi/avahi-daemon.service?h=master' type='application/atom+xml'/>
+</head>
+<body>
+<div id='cgit'><table id='header'>
+<tr>
+<td class='logo' rowspan='2'><a href='/'><img src='/busybox1.png' alt='cgit logo'/></a></td>
+<td class='main'><a href='/'>index</a> : <a title='buildroot' href='/buildroot/'>buildroot</a></td><td class='form'><form method='get' action=''>
+<select name='h' onchange='this.form.submit();'>
+<option value='2012.11.x'>2012.11.x</option>
+<option value='2013.08.x'>2013.08.x</option>
+<option value='master' selected='selected'>master</option>
+<option value='next'>next</option>
+</select> <input type='submit' name='' value='switch'/></form></td></tr>
+<tr><td class='sub'>Buildroot: Making Embedded Linux easy</td><td class='sub right'>jacmet</td></tr></table>
+<table class='tabs'><tr><td>
+<a href='/buildroot/'>summary</a><a href='/buildroot/refs/'>refs</a><a href='/buildroot/log/package/avahi/avahi-daemon.service'>log</a><a class='active' href='/buildroot/tree/package/avahi/avahi-daemon.service'>tree</a><a href='/buildroot/commit/package/avahi/avahi-daemon.service'>commit</a><a href='/buildroot/diff/package/avahi/avahi-daemon.service'>diff</a></td><td class='form'><form class='right' method='get' action='/buildroot/log/package/avahi/avahi-daemon.service'>
+<select name='qt'>
+<option value='grep'>log msg</option>
+<option value='author'>author</option>
+<option value='committer'>committer</option>
+<option value='range'>range</option>
+</select>
+<input class='txt' type='text' size='10' name='q' value=''/>
+<input type='submit' value='search'/>
+</form>
+</td></tr></table>
+<div class='path'>path: <a href='/buildroot/tree/'>root</a>/<a href='/buildroot/tree/package'>package</a>/<a href='/buildroot/tree/package/avahi'>avahi</a>/<a href='/buildroot/tree/package/avahi/avahi-daemon.service'>avahi-daemon.service</a></div><div class='content'>blob: c9b7b1f1355725eb992d9c92ad31e9b7d63ac84b (<a href='/buildroot/plain/package/avahi/avahi-daemon.service'>plain</a>)
+<table summary='blob content' class='blob'>
+<tr><td class='linenumbers'><pre><a class='no' id='n1' name='n1' href='#n1'>1</a>
+<a class='no' id='n2' name='n2' href='#n2'>2</a>
+<a class='no' id='n3' name='n3' href='#n3'>3</a>
+<a class='no' id='n4' name='n4' href='#n4'>4</a>
+<a class='no' id='n5' name='n5' href='#n5'>5</a>
+<a class='no' id='n6' name='n6' href='#n6'>6</a>
+<a class='no' id='n7' name='n7' href='#n7'>7</a>
+<a class='no' id='n8' name='n8' href='#n8'>8</a>
+<a class='no' id='n9' name='n9' href='#n9'>9</a>
+<a class='no' id='n10' name='n10' href='#n10'>10</a>
+<a class='no' id='n11' name='n11' href='#n11'>11</a>
+<a class='no' id='n12' name='n12' href='#n12'>12</a>
+<a class='no' id='n13' name='n13' href='#n13'>13</a>
+<a class='no' id='n14' name='n14' href='#n14'>14</a>
+<a class='no' id='n15' name='n15' href='#n15'>15</a>
+</pre></td>
+<td class='lines'><pre><code>[Unit]
+Description=Avahi daemon
+Requires=dbus.target
+After=syslog.target network.target auditd.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=ye
+ExecStart=/usr/sbin/avahi-daemon -s
+ExecReload=/usr/sbin/avahi-daemon -r
+ExecStop=/usr/sbin/avahi-daemon -k
+Restart=restart-always
+
+[Install]
+WantedBy=multi-user.target
+</code></pre></td></tr></table>
+</div> <!-- class=content -->
+<div class='footer'>generated  by cgit v0.9.1 at 2014-10-06 14:41:57 (GMT)</div>
+</div> <!-- id=cgit -->
+</body>
+</html>

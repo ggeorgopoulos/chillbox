@@ -13,7 +13,7 @@ RECOVERY_LICENSE_FILES = LICENSE.txt
 RECOVERY_INSTALL_STAGING = NO
 RECOVERY_DEPENDENCIES=qt
 
-FREDDO_DTALK_SERVER=freddo-dtalk-server-1.0-1
+FREDDO_DTALK_SERVER=freddo-dtalk-server
 
 define RECOVERY_BUILD_CMDS
 	(cd $(@D) ; $(QT_QMAKE))
@@ -35,12 +35,10 @@ define RECOVERY_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/keymaps/
 	$(INSTALL) -m 0755 package/recovery/keymaps/* $(TARGET_DIR)/keymaps/
 
-	rm -rf $(TARGET_DIR)/opt/*
-
 	# Install Frdddo/DTalk server
-	#(cd $(TARGET_DIR)/opt && \
-	#jar xvf $(TOPDIR)/../freddo-dtalk/$(FREDDO_DTALK_SERVER).zip && \
-	#chmod +x $(FREDDO_DTALK_SERVER)/bin/*) 
+	rm -rf $(TARGET_DIR)/opt/$(FREDDO_DTALK_SERVER)
+	cp -av $(TOPDIR)/../$(FREDDO_DTALK_SERVER) $(TARGET_DIR)/opt
+	chmod +x $(TARGET_DIR)/opt/$(FREDDO_DTALK_SERVER)/startup.sh
 endef
 
 $(eval $(generic-package))

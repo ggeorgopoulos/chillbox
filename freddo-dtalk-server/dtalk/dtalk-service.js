@@ -1,12 +1,13 @@
 var EventEmitter = require('events').EventEmitter
- , WebSocketServer = require('ws').Server
- , http = require('http')
- , express = require('express')
- , dispatcher = require('./dispatcher.js')
- , discovery = require('./discovery.js')
- , announce = require('./announce.js')
- , registry = require('./conn-registry.js')
- , hub = require('./hub.js');
+  , WebSocketServer = require('ws').Server
+  , http = require('http')
+  , express = require('express')
+  , dispatcher = require('./dispatcher.js')
+  , discovery = require('./discovery.js')
+  , announce = require('./announce.js')
+  , registry = require('./conn-registry.js')
+  , hub = require('./hub.js')
+  , exec = require('child_process').exec;
 
 var DTalkService = function() {
 	if (arguments.callee._singletonInstance) {
@@ -40,6 +41,16 @@ DTalkService.prototype.start = function(options) {
 	server.listen(options.port);
 	
 	console.log("http server listening on %d", options.port);
+	
+	// start browser...
+	exec('arora -lang en http://127.0.0.1:' + options.port,
+	  function (error, stdout, stderr) {
+	    console.log('stdout: ' + stdout);
+	    console.log('stderr: ' + stderr);
+	    if (error !== null) {
+	      console.log('exec error: ' + error);
+	    }
+	});
 	
 	var wss = new WebSocketServer({server: server, path: '/dtalksrv'});
 	wss.on('connection', function(ws) {

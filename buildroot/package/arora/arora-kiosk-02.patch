@@ -1,0 +1,11 @@
+--- arora-/src/tabbar.cpp	2014-09-24 10:26:36.936009158 +0300
++++ arora/src/tabbar.cpp	2014-10-06 23:14:34.687323133 +0300
+@@ -88,7 +88,7 @@ int TabShortcut::tab()
+ TabBar::TabBar(QWidget *parent)
+     : QTabBar(parent)
+     , m_viewTabBarAction(0)
+-    , m_showTabBarWhenOneTab(true)
++    , m_showTabBarWhenOneTab(false)
+ {
+     setContextMenuPolicy(Qt::CustomContextMenu);
+     setAcceptDrops(true);
