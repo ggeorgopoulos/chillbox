@@ -17,9 +17,11 @@ exports.start = function(/*DTalkService*/dtalk) {
 		if (e.service === 'dtalk.Dispatcher') {
 		
 			if (e.action === 'subscribe') {
-				handleSubscribe(e);	
+				console.log('>>> subscribe', e.params);
+				subscribe(e.params, e.from);
 			} else if (e.action === 'unsubscribe') {
-				handleUnsubscribe(e);
+				console.log('>>> unsubscribe', e.params);
+				unsubscribe(e.params, e.from);
 			}
 			
 		} else {
@@ -36,45 +38,48 @@ exports.start = function(/*DTalkService*/dtalk) {
 	});
 }
 
-function handleSubscribe(e) {
-	const from = e.from;
-	var event = e.params;
-	if (from && event) {
-		event = from + event;
-		console.log('handleSubscribe: ', event);
-		if (!(event in subscribers)) {
+function subscribe(event, recipient) {
+	if (recipient && event) {
+		subscriberKey = recipient + '#' + event;
+		console.log('subscriberKey:', subscriberKey);
+		if (!(subscriberKey in subscribers)) {
 			// create new
 			var subscriber = function(e) {
+				console.log('Send to subscriber:', recipient, ': ', e);
+				
 				// DO NOT publish as '$dtalk.onOutgoingMsg',
 				// its an event that has been already published.
-				e['to'] = from;
-				handleOutgoingMsg(e)
+				e['to'] = recipient;
+
+				try {
+					handleOutgoingMsg(e);
+				} catch(err) {
+					console.error(err);	
+				}
 			};
-			subscriber['__refCnt'] = 1;
-			subscribers[event] = subscriber;
 			
-			console.log('subscribe to', e.params);
-			hub.on(e.params, subscriber);
+			subscriber['__refCnt'] = 1;
+			subscribers[subscriberKey] = subscriber;
+			
+			console.log('subscribe to', event);
+			hub.on(event, subscriber);
 		} else {
 			// increace refCnt
-			var subscriber = subscribers[event];
+			var subscriber = subscribers[subscriberKey];
 			++subscriber.__refCnt;
 		}
 	}
 }
 
-function handleUnsubscribe(e) {
-	const from = e.from;
-	var event = e.params;
-	if (from && event) {
-		event = e.from + event;
-		console.log('handleUnsubscribe: ', event);
-		if (event in subscribers) {
+function unsubscribe(event, recipient) {
+	if (recipient && event) {
+		var subscriberKey = recipient + '#' + event;
+		if (subscriberKey in subscribers) {
 			// decrease refCnt
-			var subscriber = subscribers[event];
+			var subscriber = subscribers[subscriberKey];
 			if (--subscriber.__refCnt === 0) {
-				delete subscribers[event];
-				hub.remove(e.params, subscriber);
+				delete subscribers[subscriberKey];
+				hub.remove(event, subscriber);
 			}
 		}
 	}
@@ -104,10 +109,11 @@ function handleOutgoingMsg(e) {
 		//
 		// Create a new client WebSocket instance.
 		//
-		
-		var serviceInfo = dtalk.getServiceInfo(to);
+
+		var serviceInfo = _dtalk.getServices()[to];
 		if (!serviceInfo) {
 			console.error('No service info for: ', to);
+			unsubscribe(e.service, to);
 			return;
 		}
 		
@@ -179,14 +185,16 @@ function sendTo(conn, e) {
 		
 		conn.send(JSON.stringify(e), function(error) {
 			// if error is null, the send has been complited,
-			// otherwise the rror object will indicate what failed.
-			console.error(error);
+			// otherwise the error object will indicate what failed.
+			if (error) {
+				console.error('ERROR: sendTofailed:', error);
+			}
 		});
 		
-	} catch(e) {
+	} catch(err) {
 
 		// Immediate errors... 
-		console.error(e);
+		console.error(err);
 		
 	}
 	

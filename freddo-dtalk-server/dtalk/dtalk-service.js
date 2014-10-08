@@ -42,18 +42,6 @@ DTalkService.prototype.start = function(options) {
 	
 	console.log("http server listening on %d", options.port);
 	
-	// start browser...
-/*
-	exec('arora -lang en http://127.0.0.1:' + options.port,
-	  function (error, stdout, stderr) {
-	    console.log('stdout: ' + stdout);
-	    console.log('stderr: ' + stderr);
-	    if (error !== null) {
-	      console.log('exec error: ' + error);
-	    }
-	});
-*/
-	
 	var wss = new WebSocketServer({server: server, path: '/dtalksrv'});
 	wss.on('connection', function(ws) {
 		// Add to registry and initialize connection.
@@ -77,6 +65,7 @@ DTalkService.prototype.initServerConn = function(conn) {
 	var self = this;
 
 	conn.on('message', function(data, flags) {
+		console.log('>>> DTalkService.onmessage', data);
 			
 		if (flags.binary) {
 			broadcastError('[binary data]');
@@ -98,8 +87,10 @@ DTalkService.prototype.initServerConn = function(conn) {
 				}
 				
 				if (to && to !== self.__options.name) {
+					console.log('>>> outgoingMsg', dtalkMsg);
 					hub.emit('$dtalk.onOutgoingMsg', dtalkMsg);	
 				} else {
+					console.log('>>> incomingMsg', dtalkMsg);
 					hub.emit('$dtalk.onIncomingMsg', dtalkMsg);
 				}
 			} catch(e) {
