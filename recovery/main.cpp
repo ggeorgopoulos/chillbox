@@ -40,20 +40,21 @@ void reboot_to_extended(const QString &defaultPartition, bool setDisplayMode)
     QProcess::execute("umount -r /mnt");
     QProcess::execute("umount -r /settings");
 
-    if (QFile::exists("/dev/mmcblk0p7"))
-    {
+//    if (QFile::exists("/dev/mmcblk0p7"))
+//    {
 #ifdef Q_WS_QWS
         QWSServer::setBackground(Qt::white);
-        QWSServer::setCursorVisible(true);
+        QWSServer::setCursorVisible(false);
 #endif
-        BootSelectionDialog bsd(defaultPartition);
-        if (setDisplayMode)
-            bsd.setDisplayMode();
-        bsd.exec();
-    }
+//        BootSelectionDialog bsd(defaultPartition);
+//        if (setDisplayMode)
+//            bsd.setDisplayMode();
+//        bsd.exec();
+//    }
 
     // Shut down networking
     QProcess::execute("ifdown -a");
+
     // Reboot
     ::reboot(RB_AUTOBOOT);
 }
@@ -141,28 +142,30 @@ int main(int argc, char *argv[])
         a.setWindowIcon(QIcon(":/icons/raspberry_icon.png"));
 
 #ifdef Q_WS_QWS
-        QWSServer::setBackground(BACKGROUND_COLOR);
+    QWSServer::setBackground(BACKGROUND_COLOR);
 #endif
-        QSplashScreen *splash = new QSplashScreen(QPixmap(":/wallpaper.png"));
-        splash->show();
-        QApplication::processEvents();
+
+    QSplashScreen *splash = new QSplashScreen(QPixmap(":/wallpaper.png"));
+    splash->show();
+
+    QApplication::processEvents();
 
     // If -runinstaller is not specified, only continue if SHIFT is pressed, GPIO is triggered,
     // or no OS is installed (/dev/mmcblk0p5 does not exist)
-    bool bailout = !runinstaller
-        && !force_trigger
-        && !(gpio_trigger && (gpio.value() == 0 ))
-        && !(keyboard_trigger && KeyDetection::isF10pressed())
-        && QFile::exists(FAT_PARTITION_OF_IMAGE);
+//    bool bailout = !runinstaller
+//        && !force_trigger
+//        && !(gpio_trigger && (gpio.value() == 0 ))
+//        && !(keyboard_trigger && KeyDetection::isF10pressed())
+//        && QFile::exists(FAT_PARTITION_OF_IMAGE);
 
     // Default to booting first extended partition
-    putFileContents("/sys/module/bcm2708/parameters/reboot_part", "5\n");
+//    putFileContents("/sys/module/bcm2708/parameters/reboot_part", "5\n");
 
-    if (bailout)
-    {
-        splash->hide();
-        reboot_to_extended(defaultPartition, true);
-    }
+//    if (bailout)
+//    {
+//        splash->hide();
+//        reboot_to_extended(defaultPartition, true);
+//    }
 
 #ifdef Q_WS_QWS
     QWSServer::setCursorVisible(true);
@@ -171,7 +174,8 @@ int main(int argc, char *argv[])
     // Main window in the middle of screen
     MainWindow mw(defaultDisplay, splash);
     mw.setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, mw.size(), a.desktop()->availableGeometry()));
-    //ggeorg: mw.show();
+    //ggeorg: 
+    //mw.show();
 
 #ifdef ENABLE_LANGUAGE_CHOOSER
      // Language chooser at the bottom center
@@ -180,7 +184,9 @@ int main(int argc, char *argv[])
     ld->show();
 #endif
 
+    splash->hide();
     a.exec();
+
     reboot_to_extended(defaultPartition, false);
 
     return 0;

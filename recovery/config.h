@@ -7,6 +7,7 @@
 /* Color of the background */
 // #define BACKGROUND_COLOR  Qt::white
 #define BACKGROUND_COLOR  QColor(0xde, 0xde, 0xde)
+//#define BACKGROUND_COLOR  QColor(0x7F, 0x8C, 0x8D)
 
 /* Highlight color of installed OS */
 #define INSTALLED_OS_BACKGROUND_COLOR  QColor(0xef,0xff,0xef)
@@ -19,7 +20,7 @@
 
 /* Website launched when launching Arora */
 //#define HOMEPAGE  "http://www.raspberrypi.org/phpBB3/"
-#define HOMEPAGE  "http://127.0.0.1:8840"
+#define HOMEPAGE  "qrc:/startpage.html"
 
 /* Location to download the list of available distributions from */
 #define DEFAULT_REPO_SERVER  "http://downloads.raspberrypi.org/os_list_v2.json"

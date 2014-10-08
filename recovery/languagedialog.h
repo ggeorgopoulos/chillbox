@@ -42,6 +42,9 @@ private slots:
 
     void on_actionOpenKeyCombo_triggered();
     void on_keyCombo_currentIndexChanged(int index);
+
+    void on_browserTBn_clicked();
+    void on_exitTBn_clicked();
 };
 
 #endif // LANGUAGEDIALOG_H

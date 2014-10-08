@@ -10,6 +10,8 @@
 # We do not use busybox's init system
 rm -f output/target/etc/init.d/*
 
+rm -f `find output/target -iname *~`
+
 # We do not use Qt's tga/ico plugins
 #rm -rf output/target/usr/lib/qt/plugins
 

@@ -45,8 +45,8 @@ touch ../output/RECOVERY_FILES_DO_NOT_EDIT
 rm -f ../output/BUILT* || true
 BUILD_INFO="../output/BUILD-DATA"
 echo "Build-date: $(date +"%Y-%m-%d")" > "$BUILD_INFO"
-echo "NOOBS Version: "`git describe` >> "$BUILD_INFO"
-echo "NOOBS Git HEAD @ "`git rev-parse --verify HEAD` >> "$BUILD_INFO"
+echo "ChillBox Version: "`git describe` >> "$BUILD_INFO"
+echo "ChillBox Git HEAD @ "`git rev-parse --verify HEAD` >> "$BUILD_INFO"
 cat dl/rpi-userland-head.version >> "$BUILD_INFO"
 cat dl/rpi-firmware-head.version >> "$BUILD_INFO"
 

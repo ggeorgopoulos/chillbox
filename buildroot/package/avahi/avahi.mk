@@ -83,7 +83,8 @@ AVAHI_CONF_OPT = --localstatedir=/var \
 		--with-avahi-user=avahi \
 		--with-avahi-group=avahi \
 		--with-autoipd-user=avahi \
-		--with-autoipd-group=avahi
+		--with-autoipd-group=avahi \
+		--enable-compat-libdns_sd
 
 AVAHI_DEPENDENCIES = $(if $(BR2_NEEDS_GETTEXT_IF_LOCALE),gettext) host-intltool \
        host-pkgconf host-gettext

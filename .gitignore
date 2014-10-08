@@ -4,3 +4,4 @@ output/
 *.qm
 *.*~
 /ChillBox-*
+/build-recovery-Desktop-Debug/

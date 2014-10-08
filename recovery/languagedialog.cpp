@@ -57,7 +57,7 @@ LanguageDialog::LanguageDialog(const QString &defaultLang, const QString &defaul
     QString savedKeyLayout = settings.value("keyboard_layout", defaultKeyboard).toString();
 
     ui->setupUi(this);
-    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    setWindowFlags(Qt::Window | Qt::FramelessWindowHint /*| Qt::WindowStaysOnTopHint*/);
     setAttribute(Qt::WA_QuitOnClose, false);
 
     QDir kdir("/keymaps/", "*.qmap");
@@ -123,12 +123,12 @@ void LanguageDialog::changeKeyboardLayout(const QString &langcode)
     Q_UNUSED(langcode)
 #endif
 
-        // Save new language choice to INI files
-        QProcess::execute("mount -o remount, rw /settings");
-        QSettings settings("/settings/noobs.conf", QSettings::IniFormat, this);
-        settings.setValue("keyboard_layout", langcode);
-        settings.sync();
-        QProcess::execute("mount -o remount, ro /settings");
+    // Save new language choice to INI files
+    QProcess::execute("mount -o remount, rw /settings");
+    QSettings settings("/settings/noobs.conf", QSettings::IniFormat, this);
+    settings.setValue("keyboard_layout", langcode);
+    settings.sync();
+    QProcess::execute("mount -o remount, ro /settings");
 }
 
 void LanguageDialog::changeLanguage(const QString &langcode)
@@ -215,7 +215,6 @@ void LanguageDialog::on_langCombo_currentIndexChanged(int index)
     QString langcode = ui->langCombo->itemData(index).toString();
 
     changeLanguage(langcode);
-
 }
 
 void LanguageDialog::changeEvent(QEvent* event)
@@ -241,7 +240,6 @@ void LanguageDialog::on_keyCombo_currentIndexChanged(int index)
     QString keycode = ui->keyCombo->itemData(index).toString();
 
     changeKeyboardLayout(keycode);
-
 }
 
 LanguageDialog *LanguageDialog::instance(const QString &defaultLang, const QString &defaultKeyboard)
@@ -256,4 +254,14 @@ LanguageDialog *LanguageDialog::instance(const QString &defaultLang, const QStri
 QString LanguageDialog::currentLanguage()
 {
     return _currentLang;
+}
+
+void LanguageDialog::on_browserTBn_clicked()
+{
+
+}
+
+void LanguageDialog::on_exitTBn_clicked()
+{
+    qApp->exit();
 }

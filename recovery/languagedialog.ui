@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>45</height>
+    <width>512</width>
+    <height>50</height>
    </rect>
   </property>
   <property name="palette">
@@ -85,18 +85,18 @@
   <property name="windowTitle">
    <string notr="true"/>
   </property>
-   <property name="styleSheet">
+  <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="3">
+  <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0,0,0" columnminimumwidth="48,0,0,0,0,0,48">
+   <item row="0" column="4">
     <widget class="QLabel" name="label">
      <property name="text">
       <string notr="true">(9):</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="4">
+   <item row="0" column="5">
     <widget class="QComboBox" name="keyCombo">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -116,9 +116,15 @@
        <height>16777215</height>
       </size>
      </property>
+     <property name="baseSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
     </widget>
    </item>
-   <item row="0" column="0">
+   <item row="0" column="1">
     <widget class="QLabel" name="langLabel">
      <property name="minimumSize">
       <size>
@@ -139,7 +145,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
+   <item row="0" column="2">
     <widget class="QComboBox" name="langCombo">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -150,12 +156,49 @@
      <addaction name="actionOpenComboBox"/>
     </widget>
    </item>
-   <item row="0" column="2">
+   <item row="0" column="3">
     <widget class="QLabel" name="label_2">
      <property name="text">
       <string>Keyboard</string>
      </property>
      <addaction name="actionOpenKeyCombo"/>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QToolButton" name="browserTBn">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="icon">
+      <iconset resource="icons.qrc">
+       <normaloff>:/icons/world.png</normaloff>:/icons/world.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="autoRaise">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="6" alignment="Qt::AlignRight">
+    <widget class="QToolButton" name="exitTBn">
+     <property name="icon">
+      <iconset resource="icons.qrc">
+       <normaloff>:/icons/door_in.png</normaloff>:/icons/door_in.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="autoRaise">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
   </layout>
@@ -170,7 +213,7 @@
     <string notr="true">openComboBox</string>
    </property>
    <property name="shortcut">
-    <string notr="true">L</string>
+    <string>L</string>
    </property>
    <property name="shortcutContext">
     <enum>Qt::ApplicationShortcut</enum>
@@ -194,6 +237,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

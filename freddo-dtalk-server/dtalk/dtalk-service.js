@@ -43,6 +43,7 @@ DTalkService.prototype.start = function(options) {
 	console.log("http server listening on %d", options.port);
 	
 	// start browser...
+/*
 	exec('arora -lang en http://127.0.0.1:' + options.port,
 	  function (error, stdout, stderr) {
 	    console.log('stdout: ' + stdout);
@@ -51,6 +52,7 @@ DTalkService.prototype.start = function(options) {
 	      console.log('exec error: ' + error);
 	    }
 	});
+*/
 	
 	var wss = new WebSocketServer({server: server, path: '/dtalksrv'});
 	wss.on('connection', function(ws) {

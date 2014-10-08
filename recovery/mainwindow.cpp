@@ -807,15 +807,14 @@ void MainWindow::startBrowser()
         return;
 
     QProcess *proc = new QProcess(this);
-    proc->start("/opt/freddo-dtalk-server/startup.sh");
-
-/*
-    QProcess *proc = new QProcess(this);
     QString lang = LanguageDialog::instance("en", "gb")->currentLanguage();
     if (lang == "gb" || lang == "us" || lang == "")
         lang = "en";
     proc->start("arora -lang "+lang+" "+HOMEPAGE);
-*/
+
+    // (ggeorg) Start also freddo-dtalk-server.
+    proc = new QProcess(this);
+    proc->start("/opt/freddo-dtalk-server/startup.sh");
 }
 
 void MainWindow::on_list_doubleClicked(const QModelIndex &index)
