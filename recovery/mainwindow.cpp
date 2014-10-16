@@ -811,10 +811,6 @@ void MainWindow::startBrowser()
     if (lang == "gb" || lang == "us" || lang == "")
         lang = "en";
     proc->start("arora -lang "+lang+" "+HOMEPAGE);
-
-    // (ggeorg) Start also freddo-dtalk-server.
-    proc = new QProcess(this);
-    proc->start("/opt/freddo-dtalk-server/startup.sh");
 }
 
 void MainWindow::on_list_doubleClicked(const QModelIndex &index)
@@ -856,6 +852,10 @@ void MainWindow::startNetworking()
     connect(proc, SIGNAL(finished(int)), this, SLOT(ifupFinished(int)));
     /* Try enabling interface twice as sometimes it times out before getting a DHCP lease */
     proc->start("sh -c \"ifup eth0 || ifup eth0\"");
+
+    // (ggeorg) Start also freddo-dtalk-server.
+    proc = new QProcess(this);
+    proc->start("/opt/freddo-dtalk-server/startup.sh");
 }
 
 void MainWindow::ifupFinished(int)
@@ -879,9 +879,9 @@ void MainWindow::ifupFinished(int)
             downloadList(DEFAULT_REPO_SERVER);
         }
         ui->actionBrowser->setEnabled(true);
-	// ggeorg: start browser...
-	startBrowser();
-	// ---
+        // ggeorg: start browser...
+        startBrowser();
+        // ---
         emit networkUp();
     }
 
