@@ -1,56 +1,198 @@
 var dtalk = require('../dtalk/dtalk-service.js')
   , api = require('./service-api.js')
+  , forAllAsync = require('forallasync').forAllAsync
   , gpio = require('rpi-gpio');
   
+/*
+try {
+	console.log(rpiRevision());
+	var gpio = require('rpi-gpio');
+} catch(e) {
+	var gpio = {
+		setup: function(pin, dir, cb) {
+			console.log('>>> gpio.open: ', pin, dir);
+			!cb || setTimeout(function() { cb.call(gpio); }, 0);
+		},
+		read: function(pin, value, cb) {
+			console.log('>>> gpio.write: ', pin, value);
+			!cb || setTimeout(function() { cb.call(gpio, true); }, 0);	
+		},
+		write: function(pin, value, cb) {
+			console.log('>>> gpio.write: ', pin, value);
+			!cb || setTimeout(function() { cb.call(gpio); }, 0);
+		},
+	};
+}
+
+function rpiRevision() {
+	var rev = fs.readFileSync("/proc/cpuinfo").toString().split("\n").filter(function(line) {
+		return line.indexOf("Revision") == 0;
+	})[0].split(":")[1].trim();
+	
+	rev = parseInt(rev, 16) < 3 ? 1 : 2; // http://elinux.org/RPi_HardwareHistory#Board_Revision_History
+}
+*/
+
 // Using MOD_RPI by default.
 
 var name = 'dtalk.service.GPIO';
 exports.name = name;
 
-// Reads the value of a channel.
-// channel: reference to the pin in the current mode's scheme.
-exports.do_read = function(request) {
-	var channel = request.params.channel;
-	var cb = function() {
-		gpio.read(channel, function(err, /*boolean*/value) {
-			if (!err) {
-				api.sendResponse(request, value);
-			} else {
-				api.sendErrorResponse(request, dtalk.kINTERNAL_ERROR, 'Error reading channel: ' + channel, err);	
-			}
+exports.do_setup = function(request) {
+	if (Array.isArray(request.params)) {
+		var pins = request.params;
+		
+		var result = [];
+		function onEach(complete, item, i) {
+			gpio.setup(item.pin, item.dir, function(err) {
+				result.push(!err);
+				complete();
+			});
+		}
+		
+		var maxCallsAtOnce = pins.length;
+		forAllAsync(pins, onEach, maxCallsAtOnce).then(function() {
+			api.sendResponse(request, result);
 		});
-	};
-	gpio.setup(channel, gpio.DIR_IN, cb);
-}
-
-// Writes the value of a channel.
-// channel: reference to the pin in the current mode's scheme.
-// value: boolean value to specify whether the channel will turn on or off.
-exports.do_write = function(request) {
-	var channel = request.params.channel;
-	var value = request.params.value === true;
-	var cb = function() {
-		gpio.write(channel, value, function(err) {
-			if (!err) {
-				api.sendResponse(request, true);
-			} else {
-				api.sendErrorResponse(request, dtalk.kINTERNAL_ERROR, 'Error reading channel: ' + channel, err);	
-			}
+		
+	} else {
+		var item = request.params;
+		gpio.setup(item.pin, item.dir, function(err) {
+			api.sendResponse(request, !err);	
 		});
 	}
-	gpio.setup(channel, gpio.DIR_OUT, cb);
+}
+/*
+exports.do_close = function(request) {
+	var pins = request.params;
+
+	if (Array.isArray(pins)) {
+		
+		var result = [];
+		
+		function onEach(complete, item, i) {
+			gpio.close(item, function(err) {
+				result.push(!err);
+				complete();
+			});
+		}
+		
+		var maxCallsAtOnce = pins.length;
+		forAllAsync(pins, onEach, maxCallsAtOnce).then(function() {
+			api.sendResponse(request, result);
+		});
+		
+	} else {
+		
+		var item = pins;
+		gpio.close(item, function(err) {
+			api.sendResponse(request, !err);	
+		});
+	}
 }
 
-// Monitor the value of a channel.
-// channel: reference to the pin in the current mode's scheme.
-// event: custom event name suffix.
-exports.do_monitor = function(request) {
-	var channel = request.params.channel;
-	var event = request.params.event; 
-	gpio.on('change', function(_channel, /*boolean*/value) {
-		if (channel === _channel) {
-			api.fireEvent(name, event, value);
+exports.do_setDirection = function(request) {
+	var pins = request.params;
+	
+	if (Array.isArray(pins)) {
+		
+		var result = [];
+		function onEach(complete, item, i) {
+			gpio.setDirection(item.pin, item.dir, function(err) {
+				result.push(!err);
+				complete();
+			});
 		}
-	});
-	gpio.setup(channel, gpio.DIR_IN);
+		
+		var maxCallsAtOnce = pins.length;
+		forAllAsync(pins, onEach, maxCallsAtOnce).then(function() {
+			api.sendResponse(request, result);
+		});
+		
+	} else {
+		
+		var item = pins;
+		gpio.setDirection(item.pin, item.dir, function(err) {
+			api.sendResponse(request, !err);	
+		});
+	}
+}
+
+exports.do_getDirection = function(request) {
+	var pins = request.params;
+
+	if (Array.isArray(pins)) {
+		
+		var result = [];
+		
+		function onEach(complete, item, i) {
+			gpio.getDirection(item, function(err, dir) {
+				result.push(!err ? dir : 'error');
+				complete();
+			});
+		}
+		
+		var maxCallsAtOnce = pins.length;
+		forAllAsync(pins, onEach, maxCallsAtOnce).then(function() {
+			api.sendResponse(request, result);
+		});
+		
+	} else {
+		
+		var item = pins;
+		gpio.getDirection(item, function(err, dir) {
+			api.sendResponse(request, !err ? dir : 'error');	
+		});
+	}
+}
+*/
+exports.do_read = function(request) {
+	if (Array.isArray(request.params)) {
+		var pins = request.params;
+		
+		var result = [];
+		function onEach(complete, item, i) {
+			gpio.read(item, function(err, /*boolean*/value) {
+				result.push(!err ? value : -1);
+				complete();
+			});
+		}
+		
+		var maxCallsAtOnce = pins.length;
+		forAllAsync(pins, onEach, maxCallsAtOnce).then(function() {
+			api.sendResponse(request, result);
+		});
+		
+	} else {
+		var item = request.params;
+		gpio.read(item, function(err, /*boolean*/value) {
+			api.sendResponse(request, !err ? value : -1);	
+		});
+		
+	}
+}
+
+exports.do_write = function(request) {
+	if (Array.isArray(request.params)) {
+		var pins = request.params;
+		
+		var result = [];
+		function onEach(complete, item, i) {
+			gpio.write(item.pin, item.value, function(err) {
+				result.push(!err ? value : -1);
+				complete();
+			});
+		}
+		
+		var maxCallsAtOnce = pins.length;
+		forAllAsync(pins, onEach, maxCallsAtOnce).then(function() {
+			api.sendResponse(request, result);
+		});
+		
+	} else {
+		var item = request.params;
+		gpio.write(item.pin, item.value, function(err, /*boolean*/value) {
+			api.sendResponse(request, !err ? value : -1);	
+		});
+	}
 }

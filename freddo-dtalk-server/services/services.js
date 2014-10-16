@@ -42,8 +42,8 @@ function register(service) {
 					if (getter in service) {
 						try {
 							service[getter].call(service, e);
-						} catch(e) {
-							api.sendErrorResponse(e,  dtalk.kINTERNAL_ERROR, e);
+						} catch(err) {
+							api.sendErrorResponse(e,  dtalk.kINTERNAL_ERROR, ''+err);
 						}
 					} else {
 						api.sendErrorResponse(e, dtalk.kINVALID_REQUEST, 'The property is not available');	
@@ -68,8 +68,8 @@ function register(service) {
 					if (method in service) {
 						try {
 							service[method].call(service, e);
-						} catch(e) {
-							api.sendErrorResponse(e,  dtalk.kINTERNAL_ERROR, e);
+						} catch(err) {
+							api.sendErrorResponse(e,  dtalk.kINTERNAL_ERROR, ''+err);
 						}
 					} else {
 						api.sendErrorResponse(e, dtalk.kACTION_NOT_FOUND, 'The action is not available');	
