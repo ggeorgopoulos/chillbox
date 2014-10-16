@@ -26,7 +26,7 @@ exports.start = function(/*DTalkService*/ dtalk) {
 			
 			services[service.name] = service;
 			setTimeout(function() {
-				var params = service.txtRecord;
+				var params = service.txtRecord || {};
 				params['name'] = service.name;
 				params['host'] = service.host;
 				params['port'] = service.port;
