@@ -31,7 +31,7 @@
 			delete timeoutH;
 		}
 		
-		setTimeout(function() {
+		timeoutH = setTimeout(function() {
 			//DTalk.connect(host + '/dtalksrv');
 		}, 3333);
 	}

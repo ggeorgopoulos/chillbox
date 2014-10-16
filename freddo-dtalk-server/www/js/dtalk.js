@@ -26,6 +26,7 @@
  * 
  ******************************************************************************/
 (function() {
+		
 	window.DTalk = {
 
 		/**
@@ -126,7 +127,10 @@
 						DTalk._ws.onmessage = function(evt) {
 							try {
 								var msg = JSON.parse(evt.data);
-								DTalk.publish(msg.service, msg);
+								if (msg.service) {
+									//console.log(evt.data);
+									DTalk.publish(msg.service, msg);
+								}
 							} catch (e) {
 								console.log(e);
 							}
@@ -226,7 +230,7 @@
 		 * @param data
 		 *            Custom data.
 		 */
-		_createEvent: function(type, data) {
+		_newDOMEvent: function(type, data) {
 
 			// Create the event.
 			var event = document.createEvent('Event');
@@ -269,15 +273,27 @@
 		 */
 		publish: function(topic, data) {
 			try {
-				window.dispatchEvent(DTalk._createEvent(topic, data));
+				window.dispatchEvent(DTalk._newDOMEvent(topic, data));
 			} catch (e) {
-				console.log(e);
+				console.log("Failed to publish: " + topic 
+					+ '. Reason: ' + e);
 			}
 		},
 
 		/** Send text message. */
 		send: function(message) {
 			console.log("DTalk.send() is called before DTalk.connect().");
+		},
+		
+		/** Creates a new DTalk message event. */
+		newEvent: function(target, service, action, params) {
+			return {
+				dtalk: "1.0", 
+				to: target,
+				service: service,
+				action: action,
+				params: params
+			};
 		},
 
 		/**
@@ -289,7 +305,7 @@
 		},
 
 		/** Send request. */
-		sendRequest : function(message, callback, timeout) {
+		sendRequest: function(message, callback, timeout) {
 			if (!message.id) {
 				message.id = DTalk.createUniqueId(message.service);
 			}
@@ -312,16 +328,44 @@
 			DTalk.addEventListener(message.id, eventH, true, target);
 
 			timerH = setTimeout(function() {
+
+				/*
 				DTalk.removeEventListener(message.id, eventH, true, target);
-				var event = DTalk._createEvent(message.id, {
+				
+				var event = DTalk._newDOMEvent(message.id, {
 					dtalk : "1.0",
 					service : message.id,
 					error : "timeout"
 				});
 				callback.call(this, event);
+				*/
+				
+				DTalk.publish(message.id, {
+					dtalk : "1.0",
+					service : message.id,
+					error : "timeout"
+				});
+				
 			}, timeout || 33333);
 
 			DTalk.send(JSON.stringify(message));
+		},
+		
+		doSet: function(service, props, target) {
+			DTalk.sendNotification(DTalk.newEvent(target, service, 'set', props));	
+		},
+		
+		doGet: function(service, property, callback, target, timeout) {
+			DTalk.sendRequest(DTalk.newEvent(target, service, 'get', property), callback, timeout);		
+		},
+		
+		doAction: function(service, action, params, callback, target, timeout) {
+			var evt = DTalk.newEvent(target, service, action, params);
+			if (!callback) {
+				DTalk.sendNotification(evt);	
+			} else {
+				DTalk.sendRequest(evt, callback, timeout);
+			}
 		},
 
 		/**
@@ -350,7 +394,8 @@
 		 *            or simply a JavaScript function.
 		 * 
 		 * @param register,
-		 *            target (optional)
+		 *
+		 * @target (optional)
 		 * 
 		 * @see removeEventListener
 		 */
@@ -506,7 +551,7 @@
 			if (!DTalk._uniqueId) {
 				DTalk._uniqueId = (new Date()).getTime();
 			}
-			return (prefix || 'id') + (DTalk._uniqueId++);
+			return (prefix || '') + '#R-' + (DTalk._uniqueId++);
 		},
 
 		/** Get URL parameter: 2 different implementations to test. */

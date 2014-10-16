@@ -9,10 +9,130 @@ body {
   display: block;
   overflow: hidden;
   font-family: sans-serif;
-  background: #888C8D;
+  background: #778C8D;
+  font-size: 2rem;
 }
 
 a {
   color: #fff;
   text-decoration: none;
+}
+
+.iframe-wrapper {
+  position: absolute;
+  top :0; left: 0; right: 0; bottom: 0;
+  
+  margin: 2rem 2rem 8.5rem 2rem;
+}
+
+iframe {
+  width: 100%; height: 100%;
+  background: transparent !important;
+}
+
+.source {
+  font-weight: 300;
+  font-size: 1.6rem;
+  padding: 0.5rem 0.7rem;
+  display: inline-block;
+  margin: 3rem 0 0;
+  position: relative;
+  
+  -webkit-user-select: none;  
+  -moz-user-select: none;  
+  -ms-user-select: none;  
+  user-select: none;
+  
+  -webkit-transition: all 0.2s ease-in-out 0s;
+  transition: all 0.2s ease-in-out 0s;
+}
+
+.code {
+  position: absolute;
+  top: 5px;
+  left: -18px;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  line-height: 6rem;
+}
+
+.profile-link {
+  position: absolute;
+  left: 1.5rem;
+  bottom: 1.4rem;
+  height: 6rem;
+  padding-left: 5.5rem;
+  background: url(../images/cube.png) 0 center no-repeat;
+  background-size: 5rem 5rem;
+  z-index: 100;
+}
+
+.view-on-github {
+  position: absolute;
+  right: 2.5rem;
+  bottom: 1.4rem;
+  height: 6rem;
+  z-index: 100;
+  padding-left: 2.7rem;
+  background: url(../images/github@2x.png) 0 center no-repeat;
+  background-size: 2rem 2rem;
+}
+
+.underline {
+  display: block;
+  position: relative;
+  padding: 0;
+  width: 100%;
+  height: 2px;
+  bottom: 35%;
+  right: 0;
+  background-color: #fff;
+  -webkit-transition: all 0.25s ease-in-out 0s;
+  transition: all 0.25s ease-in-out 0s;
+  
+  -webkit-transform: scaleX(0);
+  transform: scaleX(0);
+}
+
+a:hover .underline {
+  -webkit-transform: scaleX(1);
+  transform: scaleX(1);
+}
+
+.spinner {
+  width: 4rem;
+  height: 4rem;
+  margin: auto;
+  background-color: #333;
+
+  position: absolute;
+  top :0; left: 0; right: 0; bottom: 0;
+
+  border-radius: 100%;  
+  -webkit-animation: scaleout 1.0s infinite ease-in-out;
+  animation: scaleout 1.0s infinite ease-in-out;
+}
+
+@-webkit-keyframes scaleout {
+  0% { -webkit-transform: scale(0.0) }
+  100% {
+    -webkit-transform: scale(1.0);
+    opacity: 0;
+  }
+}
+
+@keyframes scaleout {
+  0% { 
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+  } 100% {
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
+    opacity: 0;
+  }
 }

@@ -8,11 +8,17 @@
     <link rel="stylesheet" href="style/fonts.css" type="text/css" />
     <link rel="stylesheet" href="style/app.css" type="text/css" />
   </head>
-  <body>
-    
-    <div style="position:absolute !important; top:0; left:0; bottom:0; right:0;">
-    	<iframe id="appview" src="startpage.html" frameborder="0" style="width:100%; height:100%;"></iframe>
+  <body>   
+    <div class="spinner"></div>
+
+    <div class="iframe-wrapper">
+    	<iframe id="appview" src="startpage.html" frameborder="0"></iframe>
     </div>
+    
+    <footer>
+      <a href="http://www.arkasoft.com/" target="_blank" class="profile-link"><strong>ChillBox</strong> v0.3<span class="underline"></a> 
+      <a href="https://github.com/ggeorgopoulos/chillbox" target="_blank" class="view-on-github">View on GitHub<span class="underline"></span></a>
+    </footer>
     
     <script type="text/javascript" defer src="js/dtalk.js"></script>
     <script type="text/javascript" defer src="js/services/appview.js"></script>
