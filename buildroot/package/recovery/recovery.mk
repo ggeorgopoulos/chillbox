@@ -35,9 +35,11 @@ define RECOVERY_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/keymaps/
 	$(INSTALL) -m 0755 package/recovery/keymaps/* $(TARGET_DIR)/keymaps/
 
-	# Install Frdddo/DTalk server
+	@echo "=================================="
+	@echo "Installing Freddo/DTalk Server"
+	@echo "=================================="
 	rm -rf $(TARGET_DIR)/opt/$(FREDDO_DTALK_SERVER)
-	cp -av $(TOPDIR)/../$(FREDDO_DTALK_SERVER) $(TARGET_DIR)/opt
+	cp -a $(TOPDIR)/../$(FREDDO_DTALK_SERVER) $(TARGET_DIR)/opt
 	chmod +x $(TARGET_DIR)/opt/$(FREDDO_DTALK_SERVER)/startup.sh
 endef
 

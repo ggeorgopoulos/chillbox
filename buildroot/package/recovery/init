@@ -11,7 +11,22 @@
 /bin/hostname -F /etc/hostname
 
 # Set up ACT LED to be triggered by mmc0
-echo mmc0 > /sys/class/leds/led0/trigger
+#echo mmc0 > /sys/class/leds/led0/trigger
+
+# Udev handles uevents itself, so we don't need to have
+# the kernel call out to any binary in response to them
+echo > /proc/sys/kernel/hotplug
+
+# Start the udev daemon to continually watch for, and act on,
+# uevents
+/lib/udev/udevd --daemon
+
+# Now traverse /sys in order to "coldplug" devices that have
+# already been discovered
+udevadm trigger
+
+# Now wait for udevd to process the uevents we triggered
+udevadm settle
 
 # Rescue shell available on tty2 and tty3
 echo 2 >/sys/module/vt/parameters/cur_default

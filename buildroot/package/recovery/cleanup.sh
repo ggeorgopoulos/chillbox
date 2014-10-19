@@ -8,7 +8,7 @@
 #fi
 
 # We do not use busybox's init system
-rm -f output/target/etc/init.d/*
+#rm -f output/target/etc/init.d/*
 
 rm -f `find output/target -iname *~`
 
