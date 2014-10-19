@@ -183,7 +183,7 @@
 						console.log(e);
 					}
 				} else {
-					alert("Your browser seems to not support WebSocket !");
+					console.log("Your browser seems to not support WebSocket !");
 				}
 			}
 		},

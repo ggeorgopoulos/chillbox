@@ -2,6 +2,7 @@ var DTalkService = require('./dtalk/dtalk-service.js')
   , services = require('./services/services.js')
   , presence = require('./services/presence.js')
   , gpio = require('./services/gpio.js')
+  , serialport = require('./services/serialport.js')
   , uuid = require('node-uuid')
   , os = require('os');
 
@@ -20,6 +21,7 @@ DTalkService.start({
 // services
 services.register(presence);
 services.register(gpio);
+services.register(serialport);
 
 // start service manager...
 services.start();
