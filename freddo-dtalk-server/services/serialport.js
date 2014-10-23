@@ -1,4 +1,5 @@
-var dtalk = require('../dtalk/dtalk-service.js')
+var hub = require('../dtalk/hub.js')
+  , dtalk = require('../dtalk/dtalk-service.js')
   , api = require('./service-api.js')
   , serialPort = require('serialport2')
   , SerialPort = serialPort.SerialPort;
@@ -58,32 +59,89 @@ function setup(port) {
 		dataBits: 8,
 		parity: 'none',
 		stopBits: 1,
-		flowControl: false
+		flowControl: false,
+		bufferSize: 1
   	});
 	conn.open(function(err) {
 		if (err) {
 			console.log('failed to open: '+err);
 		} else {
 			console.log('open');
+			var line;
 			conn.on('data', function(data) {
-				console.log('data received: ' + data);		
+				//console.log('data received: ' + data);
+				
+				if (data == '\n' || data == '\b') {
+					if (line) {
+						try {
+							console.log(line);
+							process(conn, JSON.parse(line));
+						} catch(e) {
+							console.log('Error: ' + e);	
+						}
+					}
+					line = "";
+				} else {
+					line += data;
+				}
 			});
+			/*
 			conn.write('Hello, World\n', function(err, results) {
 				console.log('err ' + err);
 				console.log('results ' + results);
 			});
+			*/
 		}
 	});
 	port['conn'] = conn;
 }
 
-//encoding: ascii utf8 utf16le ucs2 base64 binary hex
-//More: http://nodejs.org/api/buffer.html#buffer_buffer
-function readline(delimiter, encoding) {
-	if (typeof delimiter === "undefined" || delimiter === null) { delimiter = "\r"; }
-	if (typeof encoding === "undefined" || encoding === null) { encoding = "utf8"; }
+function process(conn, evt) {
+	console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'+ JSON.stringify(evt));
 	
-	
+	if ('register' === evt.action) {
+		
+		var serviceName = evt.params;
+		if (serviceName) {
+
+			// TODO:
+			// avoid double entries from the same connection
+			
+			var service = function(e) {
+				
+				// clone the JSON message
+				var json = {
+					id: e.id,
+					from: e.from,
+					action: e.action,
+					params: e.params
+				};
+				
+				console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'+JSON.stringify(json));
+				
+				try {
+					conn.write(JSON.stringify(json) + '\n');
+				} catch(err) {
+					console.log(err);
+				}
+			};
+			
+			hub.on(serviceName, service);
+			
+			// send response...
+			conn.write(JSON.stringify({
+				result: true
+			}) + '\n');
+		}
+		
+	} else {
+		
+		if (evt.service) {
+			evt.dtalk = '1.0';
+			hub.emit(evt.service, evt);
+		}
+		
+	}
 }
 
 exports.get_ports = function(request) {
