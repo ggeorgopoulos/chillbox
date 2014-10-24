@@ -71,10 +71,9 @@ function setup(port) {
 			conn.on('data', function(data) {
 				//console.log('data received: ' + data);
 				
-				if (data == '\n' || data == '\b') {
+				if (data == '\n' || data == '\r') {
 					if (line) {
 						try {
-							console.log(line);
 							process(conn, JSON.parse(line));
 						} catch(e) {
 							console.log('Error: ' + e);	
@@ -97,7 +96,6 @@ function setup(port) {
 }
 
 function process(conn, evt) {
-	console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'+ JSON.stringify(evt));
 	
 	if ('register' === evt.action) {
 		
@@ -116,8 +114,6 @@ function process(conn, evt) {
 					action: e.action,
 					params: e.params
 				};
-				
-				console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'+JSON.stringify(json));
 				
 				try {
 					conn.write(JSON.stringify(json) + '\n');
